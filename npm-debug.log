@@ -1,0 +1,36 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files (x86)\\Nodist\\v-x64\\6.11.0\\node.exe',
+1 verbose cli   'C:\\Program Files (x86)\\Nodist\\npmv\\4.0.5\\bin\\npm-cli.js',
+1 verbose cli   'start' ]
+2 info using npm@4.0.5
+3 info using node@v6.11.0
+4 verbose run-script [ 'prestart', 'start', 'poststart' ]
+5 info lifecycle tempreactapp@0.1.0~prestart: tempreactapp@0.1.0
+6 warn lifecycle The node binary used for scripts is C:\Program Files (x86)\Nodist\bin\node.exe but npm is using C:\Program Files (x86)\Nodist\v-x64\6.11.0\node.exe itself. Use the `--scripts-prepend-node-path` option to include the path for the node binary npm was executed with.
+7 silly lifecycle tempreactapp@0.1.0~prestart: no script for prestart, continuing
+8 info lifecycle tempreactapp@0.1.0~start: tempreactapp@0.1.0
+9 verbose lifecycle tempreactapp@0.1.0~start: unsafe-perm in lifecycle true
+10 verbose lifecycle tempreactapp@0.1.0~start: PATH: C:\Program Files (x86)\Nodist\npmv\4.0.5\bin\node-gyp-bin;C:\Users\tatsuya\Desktop\react_excel\node_modules\.bin;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Java\jdk1.8.0_131\bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\dotnet\;C:\xampp\php;C:\Program Files\WinMerge;C:\Program Files (x86)\Brackets\command;C:\ProgramData\ComposerSetup\bin;C:\Program Files (x86)\Nodist\bin;C:\Program Files\TortoiseGit\bin;C:\Program Files\Git\cmd;C:\Users\tatsuya\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Sublime Text 3;C:\Program Files (x86)\Microsoft VS Code\bin;C:\Users\tatsuya\AppData\Local\atom\bin;C:\Users\tatsuya\AppData\Roaming\Composer\vendor\bin
+11 verbose lifecycle tempreactapp@0.1.0~start: CWD: C:\Users\tatsuya\Desktop\react_excel
+12 silly lifecycle tempreactapp@0.1.0~start: Args: [ '/d /s /c', 'react-scripts start' ]
+13 verbose stack Error: kill ENOSYS
+13 verbose stack     at exports._errnoException (util.js:1018:11)
+13 verbose stack     at process.kill (internal/process.js:190:13)
+13 verbose stack     at process.listener (C:\Program Files (x86)\Nodist\npmv\4.0.5\node_modules\npmlog\node_modules\gauge\node_modules\signal-exit\index.js:86:15)
+13 verbose stack     at emitNone (events.js:91:20)
+13 verbose stack     at process.emit (events.js:185:7)
+13 verbose stack     at processEmit (C:\Program Files (x86)\Nodist\npmv\4.0.5\node_modules\npmlog\node_modules\gauge\node_modules\signal-exit\index.js:146:32)
+13 verbose stack     at processEmit (C:\Program Files (x86)\Nodist\npmv\4.0.5\node_modules\npm-registry-client\node_modules\npmlog\node_modules\gauge\node_modules\signal-exit\index.js:146:32)
+13 verbose stack     at Signal.wrap.onsignal (internal/process.js:217:44)
+14 verbose cwd C:\Users\tatsuya\Desktop\react_excel
+15 error Windows_NT 10.0.15063
+16 error argv "C:\\Program Files (x86)\\Nodist\\v-x64\\6.11.0\\node.exe" "C:\\Program Files (x86)\\Nodist\\npmv\\4.0.5\\bin\\npm-cli.js" "start"
+17 error node v6.11.0
+18 error npm  v4.0.5
+19 error code ENOSYS
+20 error errno ENOSYS
+21 error syscall kill
+22 error kill ENOSYS
+23 error If you need help, you may report this error at:
+23 error     <https://github.com/npm/npm/issues>
+24 verbose exit [ 1, true ]
