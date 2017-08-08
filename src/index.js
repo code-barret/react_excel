@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 //import './table.css';
 
@@ -16,14 +16,25 @@ class Excel extends Component {
   //   headers: PropTypes.arrayOf(PropTypes.string)
   // };
         //初期化
-        getInitialState() {
-          return (
-            data: this.props.initialData,
-            sortby: null,
-            descending: false,
-            edit: null, // {row: 行番号, cell: 列番号}
-          );
-        },
+        // getInitialState() {
+        //   return {
+        //     data: [],
+        //     sortby: null,
+        //     descending: false,
+        //     edit: null, // {row: 行番号, cell: 列番号}
+        //   }
+        // }
+
+        //初期化
+        constructor(props) {
+        super(props);
+        //途中ここからやる
+          data: [],
+          sortby: null,
+          descending: false,
+          edit: null, // {row: 行番号, cell: 列番号}
+      }
+
 
         _sort(e) {
           let column = e.target.cellIndex;
@@ -39,14 +50,14 @@ class Excel extends Component {
             sortby: column,
             descending: descending,
           });
-        },
+        }
 
         _showEditor(e) {
           this.setState({edit: {
             row: parseInt(e.target.dataset.row, 10),
             cell: e.target.cellIndex,
           }});
-        },
+        }
 
         _save(e) {
           e.preventDefault();
@@ -57,43 +68,40 @@ class Excel extends Component {
             edit: null,
             data: data,
           });
-        },
+        }
 
         render() {
+          console.log(this.state.sortby);
           return (
       <table>
         <thead onClick={this._sort}>
           <tr>
-            {this.props.headers.map( (title, idx) => {
-              if ( this.state.sortby === idx) {
+            {headers.map( (title) => {
+              if ( this.state.sortby === 123) {
                 title += this.state.descending ? ' \u2191' : ' \u2193';
               }
-              return (
-                <th key="idx">{title}</th>
-              );
+              return <th key="">{title}</th>;
             })}
           </tr>
         </thead>
         <tbody onDoubleClick={this._showEditor}>
         {this.state.data.map( (row, rowidx) => {
-          <tr key="rowidx">{title}</tr>)},
+          <tr key="rowidx">{}</tr>;
 
-              let content = cell;
+              let content = [];
               let edit = this.state.edit;
-              if (edit && edit.row === rowidx && edit.cell === idx) {
+              if (edit && edit.row === rowidx && edit.cell === []) {
                 <form onSubmit={this.handlesubmit}>
                   <label>
                     Name:
-                      <input type="text" value={cell} />
+                      <input type="text" value="" />
                   </label>
                   <input type="submit" value="this._save" />
                 </form>
-                })
-              );
-            }
+                }
 
-            return <td key="idx">{rowidx}</td>
-
+            return <td key="">{rowidx}</td>;
+          })
         }
 
         </tbody>
@@ -102,7 +110,7 @@ class Excel extends Component {
         }
       };
 
-class SogokeiKingaku extends Component({
+class SogokeiKingaku extends Component{
   render() {
           return (
             <table>
@@ -115,7 +123,7 @@ class SogokeiKingaku extends Component({
             </table>
           );
         }
-      });
+      }
 
 class App extends Component {
   render() {
