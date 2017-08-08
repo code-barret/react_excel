@@ -15,7 +15,7 @@ class Excel extends Component {
   // Excel.propTypes = {
   //   headers: PropTypes.arrayOf(PropTypes.string)
   // };
-
+        //初期化
         getInitialState() {
           return (
             data: this.props.initialData,
@@ -81,10 +81,13 @@ class Excel extends Component {
               let content = cell;
               let edit = this.state.edit;
               if (edit && edit.row === rowidx && edit.cell === idx) {
-                content = React.DOM.form({onSubmit: this._save},
-                React.DOM.input({
-                type: 'text',
-                defaultValue: cell,
+                <form onSubmit={this.handlesubmit}>
+                  <label>
+                    Name:
+                      <input type="text" value={cell} />
+                  </label>
+                  <input type="submit" value="this._save" />
+                </form>
                 })
               );
             }
