@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-//import './table.css';
+import './table.css';
 
 class TitleHeader extends Component {
   render() {
@@ -11,28 +11,14 @@ class TitleHeader extends Component {
 }
 
 class Excel extends Component {
-
+  //propTypesはclassの外側でする
   // Excel.propTypes = {
   //   headers: PropTypes.arrayOf(PropTypes.string)
   // };
-        //初期化
-        // getInitialState() {
-        //   return {
-        //     data: [],
-        //     sortby: null,
-        //     descending: false,
-        //     edit: null, // {row: 行番号, cell: 列番号}
-        //   }
-        // }
 
         //初期化
         constructor(props) {
         super(props);
-        //途中ここからやる
-          data: [],
-          sortby: null,
-          descending: false,
-          edit: null, // {row: 行番号, cell: 列番号}
       }
 
 
@@ -40,7 +26,7 @@ class Excel extends Component {
           let column = e.target.cellIndex;
           let data = this.state.data.slice();
           let descending = this.state.sortby === column && !this.state.descending;
-          data.sort(function(a, b) {
+          data.sort((a, b) => {
             return descending
               ? (a[column] < b[column] ? 1 : -1)
               : (a[column] > b[column] ? 1 : -1);
@@ -71,36 +57,35 @@ class Excel extends Component {
         }
 
         render() {
-          console.log(this.state.sortby);
           return (
-      <table>
-        <thead onClick={this._sort}>
-          <tr>
-            {headers.map( (title) => {
-              if ( this.state.sortby === 123) {
-                title += this.state.descending ? ' \u2191' : ' \u2193';
-              }
-              return <th key="">{title}</th>;
-            })}
-          </tr>
-        </thead>
-        <tbody onDoubleClick={this._showEditor}>
-        {this.state.data.map( (row, rowidx) => {
-          <tr key="rowidx">{}</tr>;
+            <table>
+              <thead onClick={this._sort}>
+                <tr>
+                  {headers.map( (title, idx) => {
+                    if ( this.sortby === idx) {
+                      title += this.state.descending ? ' \u2191' : ' \u2193';
+                    }
+                    return <th key={idx}>{title}</th>;
+                  })}
+                </tr>
+              </thead>
+              <tbody onDoubleClick={this._showEditor}>
+              {data.map( (row, rowidx) => {
+                <tr key={rowidx}>{row}</tr>;
 
-              let content = [];
-              let edit = this.state.edit;
-              if (edit && edit.row === rowidx && edit.cell === []) {
-                <form onSubmit={this.handlesubmit}>
-                  <label>
-                    Name:
-                      <input type="text" value="" />
-                  </label>
-                  <input type="submit" value="this._save" />
-                </form>
-                }
+                let content = [];
+                let edit = this.edit;
+                if (edit && edit.row === rowidx && edit.cell === []) {
+                  <form onSubmit={this.handlesubmit}>
+                    <label>
+                      Name:
+                        <input type="text" value="" />
+                    </label>
+                    <input type="submit" value="this._save" />
+                  </form>
+                  }
 
-            return <td key="">{rowidx}</td>;
+            return <td key="">{}</td>;
           })
         }
 
