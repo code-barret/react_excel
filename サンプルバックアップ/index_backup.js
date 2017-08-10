@@ -4,7 +4,7 @@ import './table.css';
 
 var Excel = React.createClass({
         displayName: 'Excel',
-        
+
         propTypes: {
           headers: React.PropTypes.arrayOf(
             React.PropTypes.string
@@ -24,13 +24,13 @@ var Excel = React.createClass({
             edit: null, // {row: 行番号, cell: 列番号}
           };
         },
-        
+
         _sort: function(e) {
           var column = e.target.cellIndex;
           var data = this.state.data.slice();
           var descending = this.state.sortby === column && !this.state.descending;
           data.sort(function(a, b) {
-            return descending 
+            return descending
               ? (a[column] < b[column] ? 1 : -1)
               : (a[column] > b[column] ? 1 : -1);
           });
@@ -40,14 +40,14 @@ var Excel = React.createClass({
             descending: descending,
           });
         },
-        
+
         _showEditor: function(e) {
           this.setState({edit: {
             row: parseInt(e.target.dataset.row, 10),
             cell: e.target.cellIndex,
           }});
         },
-        
+
         _save: function(e) {
           e.preventDefault();
           var input = e.target.firstChild;
@@ -58,7 +58,7 @@ var Excel = React.createClass({
             data: data,
           });
         },
-        
+
         render: function() {
           return (
             React.DOM.table(null,
@@ -75,8 +75,7 @@ var Excel = React.createClass({
               React.DOM.tbody({onDoubleClick: this._showEditor},
                 this.state.data.map(function(row, rowidx) {
                   return (
-                    React.DOM.tr({key: rowidx},
-                      row.map(function(cell, idx) {
+                    React.DOM.tr({key: rowidx}, row.map(function(cell, idx) {
                         var content = cell;
                         var edit = this.state.edit;
                         if (edit && edit.row === rowidx && edit.cell === idx) {
@@ -84,23 +83,22 @@ var Excel = React.createClass({
                             React.DOM.input({
                               type: 'text',
                               defaultValue: cell,
-                            })
-                          );
-                        }
+                            })//input
+                          );//form
+                        }//if
 
                         return React.DOM.td({
                           key: idx,
                           'data-row': rowidx,
-                        }, content);
-                      }, this)
-                    )
-                  );
-                }, this)
-              )
-            )
-          );
-        }
-      });
+                        }, content);//td
+                      }, this))//tr
+                  );//return
+                }, this)//this.state.data.map
+              )//tbody
+            )//table
+          );//return
+        }//render
+      });//Excel
 
 var Button = React.createClass({
     test: function(){
@@ -138,11 +136,11 @@ var Main = React.createClass({
   }
 });
 
-      
+
       var headers = [
         "ID", "品名", "単価", "数量", "合計"
       ];
-      
+
       var data = [
         ["", "", null, null, null],
         ["", "", null, null, null],
@@ -152,7 +150,7 @@ var Main = React.createClass({
       var gyotsuika = '行追加';
       var sogokei_name = '総合計';
       var sogokei = 0;
-      
+
       ReactDOM.render(
         React.createElement(Excel, {
           headers: headers,
