@@ -39,14 +39,14 @@ class Excel extends Component {
             sortby: column,
             descending: descending,
           });
-        }
+        };
 
         _showEditor = (e) => {
           this.setState({edit: {
             row: parseInt(e.target.dataset.row, 10),
             cell: e.target.cellIndex,
           }});
-          console.log(this.state.edit);
+          // console.log(this.state.edit);
         };
 
         _save = (e) => {
@@ -58,11 +58,12 @@ class Excel extends Component {
             edit: null,
             data: data,
           });
-        }
+        };
 
         render() {
           //console.log(this.e);
-          console.log(this.content);
+          // console.log(this.content);
+          // console.log(this.state.total_price);
           // console.log(data.map((datas, id) => datas[4]));
           return (
             <table>
@@ -109,14 +110,55 @@ class Excel extends Component {
   //   headers: PropTypes.arrayOf(PropTypes.string)
   // };
 
-class SogokeiKingaku extends Component{
+class AddRow extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			data: data,
+		};
+	}
+
+	addrow = () => {
+
+		// add = [this.state.data, 6]
+		// this.setState({data: add});
+		// console.log(add);
+
+		// let add = update(this.state.data, {$push: [5]});
+		// console.log(add);
+		// this.setState({data: add});
+
+	// 	this.setState({ data: this.state.data.map(i => {
+	// 		i.length += 1;
+	// 		console.log(i);
+	// 	})
+	// });
+		console.log("プッシュ");
+	}
+
+	render() {
+		return(
+			<button onClick={this.addrow}>行追加</button>
+		);
+	}
+}
+
+class Total_price_table extends Component{
+
+
+
   render() {
+  	// let calc_price = data[0][2] + data[1][2] + data[2][2] + data[3][2];
+  	let calc_price = data.reduce(function(a,b){
+  		//console.log(a[2].concat(b[2]));
+  		return c[a].concat(b[2]);
+  	});
           return (
             <table>
               <thead>
                 <tr>
                   <th>総合計</th>
-                  <th>{sogokei}</th>
+                  <th>{calc_price}</th>
                 </tr>
               </thead>
             </table>
@@ -130,7 +172,8 @@ class App extends Component {
       <div>
         <TitleHeader />
         <Excel />
-        <SogokeiKingaku />
+        <AddRow />
+        <Total_price_table />
       </div>
     );
   }
@@ -147,9 +190,9 @@ class App extends Component {
       //   ["", "", 0, 0, 0],
       //   ["", "", 0, 0, 0]
       // ];
-      var data = [...Array(5).keys()].map(i => [i + 1, "", 0, 0, 0]);
+      var data = [...Array(5).keys()].map(i => [i + 1, "", 1, 2, 0]);
 
-      var sogokei = 0;
+      var total_price = 0;
 
       ReactDOM.render(
         <App />,
