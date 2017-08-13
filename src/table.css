@@ -25,8 +25,9 @@ th {
 
 table {
   border: groove;
-  margin: 20px;
-  width:  80%;
+  /* margin: 20px; */
+  width:  auto;
+  margin-left: auto;
 }
 
 .toolbar {
