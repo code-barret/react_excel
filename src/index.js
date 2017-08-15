@@ -43,10 +43,7 @@ class Excel extends Component {
 
   _sort = (e) => {
     let column = e.target.cellIndex; //ダブルクリックされた<td>要素を表す
-    let data = this
-      .state
-      .data
-      .slice();
+    let data = this.state.data.slice();
     let descending = this.state.sortby === column && !this.state.descending;
     data.sort((a, b) => {
       return descending
