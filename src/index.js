@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import './table.css';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import RaisedButton from 'material-ui/RaisedButton';
-import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import AppBar from 'material-ui/AppBar';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+import TextField from 'material-ui/TextField';
+import Toggle from 'material-ui/Toggle';
 import {
   Table,
   TableBody,
@@ -14,6 +15,7 @@ import {
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';
+injectTapEventPlugin();
 
 class TitleHeader extends Component {
         render() {
@@ -28,7 +30,6 @@ class TitleHeader extends Component {
       }
 
 class Excel extends Component {
-
         //初期化
         constructor(props) {
         super(props);
@@ -77,27 +78,28 @@ class Excel extends Component {
         };
 
         render() {
-
-          this.state.data.forEach((a,b,c) => {
-            data[b][4] = a[2] * a[3];
-            console.log(data[b][4]);
-            //total_price += data[b][4];
-          });
+          // this.state.data.forEach((a,b) => {
+          //   data[b][4] = a[2] * a[3];
+          // });
+          this.state.data.map((a,b) => { data[b][4] = a[2] * a[3] });
 
           return (
+          <div>
             <MuiThemeProvider>
-            <table>
-              <TableHeader onClick={this._sort}>
+            <Table selectable={false}>
+              <TableHeader
+              displayRowCheckbox={false}
+              displaySelectAll={false}>
                 <TableRow>
                   {headers.map( (title, idx) => {
                     if ( this.state.sortby === idx) {
                       title += this.state.descending ? ' \u2191' : ' \u2193';
                     }
-                    return <TableHeaderColumn key={idx}>{title}</TableHeaderColumn>;
+                    return <TableHeaderColumn key={idx} onTouchTap={this._sort}>{title}</TableHeaderColumn>;
                   })}
                 </TableRow>
               </TableHeader>
-              <TableBody onDoubleClick={this._showEditor}>
+              <TableBody showRowHover={true} stripedRows={true} displayRowCheckbox={false} onDoubleClick={this._showEditor}>
               {this.state.data.map( (row, rowidx) => {
                 return(
                 <TableRow key={rowidx}>{row.map((cell, idx) => {
@@ -121,11 +123,14 @@ class Excel extends Component {
               })}
 
             </TableBody>
-          </table>
-          </MuiThemeProvider>
-        );
-      }
-    };
+          </Table>
+        </MuiThemeProvider>
+        <AddRow />
+        <Total_price_table />
+        </div>
+      );
+    }
+  };
 
   // Excel.propTypes = {
   //   headers: PropTypes.arrayOf(PropTypes.string)
@@ -153,7 +158,7 @@ class AddRow extends Component {
 
   render() {
     return(
-      <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
+      <MuiThemeProvider>
         <RaisedButton label="行追加" onClick={this.addrow}　/>
       </MuiThemeProvider>
     );
@@ -180,23 +185,24 @@ class Total_price_table extends Component{
    //    }
     // }, this.state.data[0][2]);
     //let calc_price = data.slice();
-    data.forEach((a, b, c) => {
+    //data.forEach((a) => {
       //data[b][4] = a[4] * a[3];
-      total_price += a[4];
+      //total_price += a[4];
       //total_price += data[b][4];
       //console.log(data[b][4]);
-    });
+
+      data.map(d =>  total_price += d[2] * d[3] );
 
           return (
           <MuiThemeProvider>
-            <table>
-              <TableHeader>
+            <Table>
+              <TableBody  displayRowCheckbox={false}>
                 <TableRow>
                   <TableRowColumn>総合計</TableRowColumn>
                   <TableRowColumn>{total_price}</TableRowColumn>
                 </TableRow>
-              </TableHeader>
-            </table>
+              </TableBody>
+            </Table>
           </MuiThemeProvider>
           );
         }
@@ -208,8 +214,6 @@ class App extends Component {
       <div>
         <TitleHeader />
         <Excel />
-        <AddRow />
-        <Total_price_table />
       </div>
     );
   }
