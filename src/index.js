@@ -36,7 +36,6 @@ class Excel extends Component {
         this.state = {
           data: data,
           headers: headers,
-          total_price: total_price,
           sortby: null,
           descending: false,
           edit: null, // {row: 行番号, cell: 列番号}
@@ -83,6 +82,10 @@ class Excel extends Component {
           // });
           this.state.data.map((a,b) => { data[b][4] = a[2] * a[3] });
 
+          let total_price = 0;
+          this.state.data.map(d =>  this.total_price += d[2] * d[3] );
+          console.log(this.total_price);
+
           return (
           <div>
             <MuiThemeProvider>
@@ -126,7 +129,7 @@ class Excel extends Component {
           </Table>
         </MuiThemeProvider>
         <AddRow />
-        <Total_price_table />
+        <Total_price_table total_price={this.total_price} />
         </div>
       );
     }
@@ -191,15 +194,13 @@ class Total_price_table extends Component{
       //total_price += data[b][4];
       //console.log(data[b][4]);
 
-      data.map(d =>  total_price += d[2] * d[3] );
-
           return (
           <MuiThemeProvider>
             <Table>
               <TableBody  displayRowCheckbox={false}>
                 <TableRow>
                   <TableRowColumn>総合計</TableRowColumn>
-                  <TableRowColumn>{total_price}</TableRowColumn>
+                  <TableRowColumn>{this.props.total_price}</TableRowColumn>
                 </TableRow>
               </TableBody>
             </Table>
