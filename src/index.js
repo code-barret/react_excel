@@ -49,7 +49,7 @@ class Excel extends Component {
         : (a[column] > b[column] ? 1 : -1);
     });
     this.setState({data: data, sortby: column, descending: descending});
-  };
+  }
 
   _showEditor = (e) => {
     this.setState({
@@ -58,7 +58,7 @@ class Excel extends Component {
         cell: e.target.cellIndex
       }
     });
-  };
+  }
 
   _save = (e) => {
     e.preventDefault();
@@ -66,12 +66,17 @@ class Excel extends Component {
     let data = this.state.data.slice();
     data[this.state.edit.row][this.state.edit.cell] = input.value;
     this.setState({edit: null, data: data});
-  };
+  }
+
+  addRow = () => {
+    //let addrow = this.state.data.concat(newrow);
+    console.log('プッシュ');
+  }
 
   render() {
     let headers = ["ID", "品名", "単価", "数量", "合計"];
     this.state.data.forEach((d, i) => this.state.data[i][4] = d[2] * d[3] );
-
+    //this.setState({data: this.state.data.map((d,i) => d[4] = d[2] * d[3])});
     let total_price = this.state.data.map( a => a[4]).reduce((p, c) => p + c);
 
     return (
@@ -117,7 +122,7 @@ class Excel extends Component {
             </TableBody>
           </Table>
         </MuiThemeProvider>
-        <AddRow/>
+        <AddRow addRow={this.addRow}/>
         <Total_price_table total_price={total_price}/>
       </div>
     );
@@ -128,19 +133,16 @@ class Excel extends Component {
 
 class AddRow extends Component {
 
-  addrow = () => {
-
-    // add = [this.state.data, 6] this.setState({data: add}); console.log(add); let
-    // add = update(this.state.data, {$push: [5]}); console.log(add);
+  //addrow = () => {
     // this.setState({data: add});  this.setState({ data: this.state.data.map(i => {
     //    i.length += 1;    console.log(i);  }) });
-    console.log("プッシュ");
-  }
+    //console.log('プッシュ');
+  //}
 
   render() {
     return (
       <MuiThemeProvider>
-        <RaisedButton label="行追加" onClick={this.addrow}/>
+        <RaisedButton label="行追加" onClick={this.props.addRow}/>
       </MuiThemeProvider>
     );
   }
