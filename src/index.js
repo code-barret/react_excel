@@ -34,7 +34,6 @@ class Excel extends Component {
     this.state = {
       data: data,
       headers: headers,
-      total_price: 0,
       sortby: null,
       descending: false,
       edit: null, // {row: 行番号, cell: 列番号}
@@ -103,7 +102,6 @@ class Excel extends Component {
                         let edit = this.state.edit;
 
                         if (edit && edit.row === rowidx && edit.cell === idx) {
-
                           content = (
                             <form onSubmit={this._save}>
                               <input type="text" defaultValue={this.state.cell}/>
