@@ -32,8 +32,7 @@ class Excel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: data,
-      headers: headers,
+      data: [...Array(5).keys()].map(i => [ i + 1, "", i + 1, 2, 0]),
       sortby: null,
       descending: false,
       edit: null, // {row: 行番号, cell: 列番号}
@@ -70,11 +69,10 @@ class Excel extends Component {
   };
 
   render() {
-    // this.state.data.forEach((a,b) => {   data[b][4] = a[2] * a[3]; });
-    this.state.data.map((a, b) => { data[b][4] = a[2] * a[3] });
+    let headers = ["ID", "品名", "単価", "数量", "合計"];
+    this.state.data.forEach((d, i) => this.state.data[i][4] = d[2] * d[3] );
 
-    let total_price = 0;
-    this.state.data.map((a, b) => { total_price += a[4] });
+    let total_price = this.state.data.map( a => a[4]).reduce((p, c) => p + c);
 
     return (
       <div>
@@ -101,13 +99,13 @@ class Excel extends Component {
                         let content = cell;
                         let edit = this.state.edit;
 
-                        if (edit && edit.row === rowidx && edit.cell === idx) {
-                          content = (
+                        let submit = (edit && edit.row === rowidx && edit.cell === idx)
+                        ?  content = (
                             <form onSubmit={this._save}>
                               <input type="text" defaultValue={this.state.cell}/>
                             </form>
-                          )
-                        }
+                           )
+                        : cell;
 
                         //idxとrowidxがeditプロパティの値と一致する場合、contentを 入力フィールドに置き換えます。そうでない場合は、文字列をそのまま表示します
                         return <TableRowColumn key={idx} data-row={rowidx}>{content}</TableRowColumn>
@@ -175,9 +173,6 @@ class App extends Component {
     );
   }
 }
-
-const headers = [];
-const data = [...Array(5).keys()].map(i => [ i + 1, "", i + 1, 2, 0]);
 
 ReactDOM.render(
   <App/>, document.getElementById("root"));
