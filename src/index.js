@@ -32,7 +32,7 @@ class Excel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: [...Array(5).keys()].map(i => [ i + 1, "", i + 1, 2, 0, ""]),
+      data: [...Array(5).keys()].map(i => [ i + 1, "未入力", i + 1, 2, 0, ""]),
       sortby: null,
       descending: false,
       edit: null, // {row: 行番号, cell: 列番号}
@@ -40,7 +40,7 @@ class Excel extends Component {
   }
 
   _sort = (e) => {
-    const column = e.target.cellIndex; //ダブルクリックされた<td>要素を表す
+    const column = e.target.cellIndex - 1 ; //ダブルクリックされた<td>要素を表す
     const data = this.state.data.slice();
     const descending = this.state.sortby === column && !this.state.descending;
     data.sort((a, b) => {
@@ -52,6 +52,8 @@ class Excel extends Component {
   }
 
   _showEditor = (e) => {
+    //console.log(e.target.dataset.row);
+    console.log(e.currentTarget);
     this.setState({
       edit: {
         row: parseInt(e.target.dataset.row, 10),
@@ -70,22 +72,22 @@ class Excel extends Component {
 
   addRow = () => {
     //const add = [this.state.data.length + 1, "", 1, 2];
-    const addrow = [...this.state.data, [this.state.data.length + 1, "", 1, 2, 0, ""]];
+    const addrow = [...this.state.data, [this.state.data.length + 1, "未入力", 1, 2, 0, ""]];
     this.setState({data: addrow});
   }
 
-  delete = () => {
-    //console.log(this.state.edit.row);
+  delete = (event) => {
+    console.log(event.target.value);
+    console.log(event.currentTarget);
     const deleteNumber = this.state.data.filter(d => {
-      console.log(d[0]);
       //console.log(this.state.edit.row);
-      return d[0] !== this.state.edit.row;
+      return d[0] !== parseInt(event.target.id);
     });
     this.setState({data: deleteNumber});
   }
 
   render() {
-    const headers = ["ID", "品名", "単価", "数量", "合計"];
+    const headers = ["ID", "品名", "単価", "数量", "合計", "削除"];
     this.state.data.forEach((d, i) => this.state.data[i][4] = d[2] * d[3] );
     //this.setState({data: this.state.data.map( d => d[4] = d[2] * d[3])});
     const total_price = this.state.data.map( a => a[4]).reduce((p, c) => p + c);
@@ -116,14 +118,14 @@ class Excel extends Component {
                         //const content = cell;
                         const edit = this.state.edit;
                           //console.log(cell, idx);
-                        const content = (edit && edit.row === rowidx && edit.cell === idx)
+                        const content = (edit && edit.row && edit.row === rowidx && edit.cell === idx && idx < 4)
                         ? <form onSubmit={this._save}>
                             <input type="text" defaultValue={this.state.cell}/>
                           </form>
                         : cell;
 
                         const btn = (idx === 5)
-                        ? <button onClick={this.delete}>{"削除"}</button>
+                        ? <button onClick={this.delete} id={this.state.data[rowidx][0]}>{"削除"}</button>
                         : null;
 
                         //idxとrowidxがeditプロパティの値と一致する場合、contentを 入力フィールドに置き換えます。そうでない場合は、文字列をそのまま表示します
