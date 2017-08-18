@@ -2,11 +2,8 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import RaisedButton from 'material-ui/RaisedButton';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import AppBar from 'material-ui/AppBar';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-import TextField from 'material-ui/TextField';
-import Toggle from 'material-ui/Toggle';
 import {
   Table,
   TableBody,
@@ -77,19 +74,21 @@ class Excel extends Component {
   }
 
   delete = (event) => {
-    console.log(event.target.value);
+    console.log(event.target.dataset.id);
     console.log(event.currentTarget);
     const deleteNumber = this.state.data.filter(d => {
       //console.log(this.state.edit.row);
-      return d[0] !== parseInt(event.target.id);
+      return d[0] !== parseInt(event.target.dataset.id);
     });
     this.setState({data: deleteNumber});
   }
 
   render() {
     const headers = ["ID", "品名", "単価", "数量", "合計", "削除"];
-    this.state.data.forEach((d, i) => this.state.data[i][4] = d[2] * d[3] );
-    //this.setState({data: this.state.data.map( d => d[4] = d[2] * d[3])});
+    // this.state.data.forEach((d, i) => this.state.data[i][4] = d[2] * d[3] );
+    // console.log(this.state.data);
+    this.setState({data: this.state.data.map( d => [ d[0], d[1], d[2], d[3], [...d[4] = d[2] * d[3]], d[5] ] )});
+    console.log(this.state.data);
     const total_price = this.state.data.map( a => a[4]).reduce((p, c) => p + c);
     //console.log(this.state.edit);
 
@@ -125,7 +124,7 @@ class Excel extends Component {
                         : cell;
 
                         const btn = (idx === 5)
-                        ? <button onClick={this.delete} id={this.state.data[rowidx][0]}>{"削除"}</button>
+                        ? <button onClick={this.delete} data-id={this.state.data[rowidx][0]}>{"削除"}</button>
                         : null;
 
                         //idxとrowidxがeditプロパティの値と一致する場合、contentを 入力フィールドに置き換えます。そうでない場合は、文字列をそのまま表示します
