@@ -31,15 +31,15 @@ class TitleHeader extends Component {
 
 class Excel extends Component {
   //初期化
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: [...Array(5).keys()].map(i => [ i + 1, "未入力", i + 1, 2, 0, ""]),
-      sortby: null,
-      descending: false,
-      edit: null, // {row: 行番号, cell: 列番号}
-    };
-  }
+  // constructor(props) {
+  //   super(props);
+  //   this.state = {
+  //     data: [...Array(5).keys()].map(i => [ i + 1, "未入力", i + 1, 2, 0, ""]),
+  //     sortby: null,
+  //     descending: false,
+  //     edit: null, // {row: 行番号, cell: 列番号}
+  //   };
+  // }
 
   // _sort = (e) => {
   //   const column = e.target.cellIndex - 1 ; //ダブルクリックされた<td>要素を表す
@@ -79,13 +79,6 @@ class Excel extends Component {
   // //   this.setState({data: addrow});
   // // }
 
-  // // addRow = (state = [], action) => {
-  // //   switch(action.type) {
-  // //     case 'ADD_ROW':
-  // //       return state = [...this.state.data, [this.state.data.length + 1, "未入力", 1, 2, 0, ""]];
-  // //   }
-  // // }
-
   // delete = (event) => {
   //   //console.log(event.target.dataset.id);
   //   //console.log(event.currentTarget);
@@ -104,10 +97,8 @@ class Excel extends Component {
     //console.log(this.state.data);
     const total_price = _data.map( a => a[4]).reduce((p, c) => p + c);
     //console.log(this.state.edit);
-
     return (
       <div>
-        
         <MuiThemeProvider>
           <Table selectable={false}>
             <TableHeader displayRowCheckbox={false} displaySelectAll={false}>
@@ -202,78 +193,121 @@ class Total_price_table extends Component {
   }
 }
 
-const _sort = (state, action) => {
+const data = (state = [...Array(5).keys()].map(i => [ i + 1, "未入力", i + 1, 2, 0, ""]), action) => {
   switch(action.type) {
+    case 'ADD_ROW':
+      return state = [...state, [state.length + 1, "未入力", 1, 2, 0, ""]]
+
+    case 'DELETE':
+      return state = state.filter(d => {
+        //console.log(this.state.edit.row);
+        return d[0] !== parseInt(action.event);
+      })
+
     case 'SORT':
-      return state = action.data
+      return
+        //action.column = e.target.cellIndex - 1;
+        action.data = data.slice();
+        action.descending = sortby === action.column && !descending;
+          data.sort((a, b) => {
+          return descending
+            ? (a[action.e] < b[action.e] ? 1 : -1)
+            : (a[action.e] > b[action.e] ? 1 : -1);
+        });
+
+    case 'SAVE':
+      return state
+
+    default:
+      return state
   }
 }
 
-const _showEditor = (state, action) => {
+const sortby = (state = null, action) => {
   switch(action.type) {
     case 'SHOW_EDITOR':
-      return state = null
+      return state
+
+    case 'SORT':
+      return state
+
+    default:
+      return state
   }
 }
 
-const _save = (state, action) => {
+const descending = (state = false, action) => {
   switch(action.type) {
     case 'SAVE':
       return state = null
+
+    case 'SORT':
+      return state
+
+    default:
+      return state
   }
 }
 
-const _addRow = (state, action) => {
+const edit = (state = null, action) => {
   switch(action.type) {
     case 'ADD_ROW':
-      return state = [...action.data, [action.data.length + 1, "未入力", 1, 2, 0, ""]];
+      return state
+
+    case 'SAVE':
+      return state
+
+    case 'SHOW_EDITOR':
+      return state[{
+        row: parseInt(action.target),
+        cell: action.cellIndex
+      }]
+
+    default:
+      return state
   }
 }
 
-const _delete = (state, action) => {
-  switch(action.type) {
-    case 'DELETE':
-      return state = null
-  }
-}
-
-const redusers = combineReducers({
-  _sort: [],
-  _showEditor: [],
-  _save: [],
-  _addRow: [],
-  _addRow: [],
-  _addRow: []
-})
+// const redusers = combineReducers({
+//   _sort: [],
+//   _showEditor: [],
+//   _save: [],
+//   _addRow: [],
+//   _addRow: [],
+//   _addRow: []
+// })
 
 const app = () => {
  <div>
    <TitleHeader/>
    <Excel
      value={store.getState()}
-    _sort = {() =>
+    _sort = {(e) =>
       store.dispatch({
         type: 'SORT',
-        data: store.data
-        //column: column,
-        //data: data,
-        //descending: descending
+        column: null,
+        data: [],
+        descending: false,
+        e: e.target.cellIndex - 1
     })}
-    _showEditor = {() =>
+    _showEditor = {(e) =>
       store.dispatch({
-        type: 'SHOW_EDITOR'
+        type: 'SHOW_EDITOR',
+        target: (e.target.dataset.row, 10),
+        cellIndex: e.target.cellIndex
     })}
     _save = {() =>
       store.dispatch({
-        type: 'SAVE'
+        type: 'SAVE',
     })}
     _addRow = {() =>
        store.dispatch({
          type:'ADD_ROW'
     })}
-    _delete ={() =>
+    _delete ={(event) =>
       store.dispatch({
-        type: 'DELETE'
+        type: 'DELETE',
+        event: event.target.dataset.id
     })}
    />
  </div>
@@ -286,7 +320,7 @@ const app = () => {
 //   edit: null,
 // };
 
-const store = createStore(redusers);
+const store = createStore(data);
 
 const render = () => {
   ReactDOM.render(
