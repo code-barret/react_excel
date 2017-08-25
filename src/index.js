@@ -44,7 +44,11 @@ class Excel extends Component {
   _sort = (e) => {
     const column = e.target.cellIndex - 1 ; //ダブルクリックされた<td>要素を表す
     const data = this.state.data.slice();
+    console.log(this.state.descending);
+    console.log(this.state.sortby);
+    console.log(column);
     const descending = this.state.sortby === column && !this.state.descending;
+    //console.log(descending);
     data.sort((a, b) => {
       return descending
         ? (a[column] < b[column] ? 1 : -1)
@@ -66,12 +70,9 @@ class Excel extends Component {
 
   _save = (e) => {
     e.preventDefault();
-    console.log(e.target.firstChild);
     const input = e.target.firstChild;
     const data = this.state.data.slice();
-    console.log(input.value);
     data[this.state.edit.row][this.state.edit.cell] = input.value;
-    console.log(data);
     this.setState({edit: null, data: data});
   }
 
