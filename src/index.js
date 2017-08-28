@@ -48,7 +48,7 @@ class Excel extends Component {
     console.log(this.state.sortby);
     console.log(column);
     const descending = this.state.sortby === column && !this.state.descending;
-    //console.log(descending);
+    console.log(descending);
     data.sort((a, b) => {
       return descending
         ? (a[column] < b[column] ? 1 : -1)
