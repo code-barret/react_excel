@@ -1,7 +1,13 @@
 const dataInitialState = [...Array(5).keys()].map(i => [ i + 1, "未入力", 1, 2, 0, ""]);
 const editInitialState = [];
+const sortDataInitial = [
+  [ 2, '未入力', 10, 21, 0, '' ],
+  [ 1, '未入力', 30, 23, 0, '' ],
+  [ 3, '未入力', 20, 22, 0, '' ],
+  [ 4, '未入力', 40, 24, 0, '' ],
+  [ 5, '未入力', 50, 25, 0, '' ] ];
 
-const dataReducer = (state = dataInitialState, action) => {
+const dataReducer = (state = sortDataInitial, action) => {
     switch (action.type) {
       case 'ADD_ROW':
         return [...state, [state.length + 1, "未入力", 1, 2, 0, ""]]
@@ -15,6 +21,18 @@ const dataReducer = (state = dataInitialState, action) => {
         const test = state.slice();
         test[action.row][action.cell] = action.input;
         return test;
+
+      case 'SORT_DATA':
+        //let column = 0;
+        //let des = true;
+        const dataS = state.slice();
+        const descending = action.sortby === action.column && !action.des;
+
+        return dataS.sort((a, b) => {
+          return descending
+            ? (a[action.column] < b[action.column] ? 1 : -1)
+            : (a[action.column] > b[action.column] ? 1 : -1);
+        });
 
       default:
           return state;
@@ -104,3 +122,17 @@ const editReducer = (state = editInitialState, action) => {
 //     expect(result).toEqual(expected);
 //   });
 // });
+
+ describe("dataReducer", () => {
+   it("SORT_DATA", () => {
+     const result = dataReducer(sortDataInitial, {type: "SORT_DATA", sortby: 0, column: 0, des: true});
+     const expected = [
+      [ 1, '未入力', 30, 23, 0, '' ],
+      [ 2, '未入力', 10, 21, 0, '' ],
+      [ 3, '未入力', 20, 22, 0, '' ],
+      [ 4, '未入力', 40, 24, 0, '' ],
+      [ 5, '未入力', 50, 25, 0, '' ] ];
+
+     expect(result).toEqual(expected);
+   });
+ });
