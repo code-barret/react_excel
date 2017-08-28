@@ -203,58 +203,60 @@ const redusers = combineReducers({
 })
 
 const App = () => {
-<div>
-  <TitleHeader/>
-  <Excel
-    value={store.getState()}
+  return(
+    <div>
+      <TitleHeader/>
+      <Excel
+        value={store.getState()}
 
-    _addRow = {() =>
-      store.dispatch({
-        type:'ADD_ROW'
-   })}
+        _addRow = {() =>
+          store.dispatch({
+            type:'ADD_ROW'
+       })}
 
-   _delete ={(event) =>
-     store.dispatch({
-       type: 'DELETE',
-       eventTargetId: 1
-   })}
+      _delete ={(event) =>
+        store.dispatch({
+          type: 'DELETE',
+          eventTargetId: 1
+      })}
 
-   _showEditor = {(e) =>
-     store.dispatch({
-       type: 'SHOW_EDITOR',
-       row: 1,
-       cell: 2
-   })}
+      _showEditor = {(e) =>
+        store.dispatch({
+          type: 'SHOW_EDITOR',
+          row: 1,
+          cell: 2
+      })}
 
-   _save = {(e) =>
-     store.dispatch({
-       type: 'SAVE',
-       input: 32,
-       row: 2,
-       cell: 1
-   })}
+      _save = {(e) =>
+        store.dispatch({
+          type: 'SAVE',
+          input: 32,
+          row: 2,
+          cell: 1
+      })}
 
-   _sortData = {(e) =>
-     store.dispatch({
-       type: 'SORT_DATA',
-       column: 0,
-       sortby: 0,
-       descending: false
-   })}
+      _sortData = {(e) =>
+        store.dispatch({
+          type: 'SORT_DATA',
+          column: 0,
+          sortby: 0,
+          descending: false
+      })}
 
-   _sortDescending = {() =>
-    store.dispatch({
-      type: 'SORT_DESCENDING',
-      descending: false
-    })}
+      _sortDescending = {() =>
+       store.dispatch({
+         type: 'SORT_DESCENDING',
+         descending: false
+       })}
 
-  _sortSortBy = {() =>
-    store.dispatch({
-      type: 'SORT_SORTBY',
-      sortBy: 0
-    })}
-  />
-</div>
+      _sortSortBy = {() =>
+        store.dispatch({
+          type: 'SORT_SORTBY',
+          sortBy: 0
+        })}
+      />
+    </div>
+  );
  }
 
 // const initialState = {
