@@ -1,5 +1,4 @@
 const dataInitialState = [...Array(5).keys()].map(i => [ i + 1, "未入力", 1, 2, 0, ""]);
-const editInitialState = [];
 const sortDataInitial = [
   [ 2, '未入力', 10, 21, 0, '' ],
   [ 1, '未入力', 30, 23, 0, '' ],
@@ -7,14 +6,14 @@ const sortDataInitial = [
   [ 4, '未入力', 40, 24, 0, '' ],
   [ 5, '未入力', 50, 25, 0, '' ] ];
 
-const dataReducer = (state = sortDataInitial, action) => {
+const dataReducer = (state = [...Array(5).keys()].map(i => [ i + 1, "未入力", 1, 2, 0, ""]), action) => {
     switch (action.type) {
       case 'ADD_ROW':
         return [...state, [state.length + 1, "未入力", 1, 2, 0, ""]]
 
       case 'DELETE':
         return state.filter(d => {
-          return d[0] !== 1;
+          return d[0] !== action.eventTargetId;
         })
 
       case 'SAVE':
@@ -23,23 +22,21 @@ const dataReducer = (state = sortDataInitial, action) => {
         return test;
 
       case 'SORT_DATA':
-        //let column = 0;
-        //let des = true;
-        const dataS = state.slice();
-        const descending = action.sortby === action.column && !action.des;
+        const clonedState = state.slice();
+        const descending = action.sortby === action.column && !action.descending;
 
-        return dataS.sort((a, b) => {
+        return clonedState.sort((a, b) => {
           return descending
             ? (a[action.column] < b[action.column] ? 1 : -1)
             : (a[action.column] > b[action.column] ? 1 : -1);
         });
 
-      default:
+        default:
           return state;
   }
 };
 
-const editReducer = (state = editInitialState, action) => {
+const editReducer = (state = [], action) => {
     switch (action.type) {
       case 'SHOW_EDITOR':
         return {
@@ -54,7 +51,8 @@ const editReducer = (state = editInitialState, action) => {
 
   const descendingReducer = (state = false, action) => {
     switch (action.type) {
-      case 'SORT':
+      case 'SORT_DESCENDING':
+        return action.descending;
 
       default:
         return state;
@@ -63,8 +61,8 @@ const editReducer = (state = editInitialState, action) => {
 
   const sortByReducer = (state = null, action) => {
     switch (action.type) {
-      case 'SORT_BY':
-        
+      case 'SORT_SORTBY':
+        return action.sortBy;
 
 
       default:
@@ -80,20 +78,21 @@ const editReducer = (state = editInitialState, action) => {
 
 //     expect(result).toEqual(expected);
 //   });
+// });
 
 //     // 完了
-//   it("DELETE", () => {
-//     const result = dataReducer(dataInitialState, { type: "DELETE" });
-//     const expected = [...Array(4).keys()].map(i => [ i + 2, "未入力", 1, 2, 0, ""]);
+  // it("DELETE", () => {
+  //   const result = dataReducer(dataInitialState, { type: "DELETE", eventTargetId: 1});
+  //   const expected = [...Array(4).keys()].map(i => [ i + 2, "未入力", 1, 2, 0, ""]);
 
-//     expect(result).toEqual(expected);
-//   });
+  //   expect(result).toEqual(expected);
+  // });
 
 // });
 //     //完了
 // describe("editReducer", () => {
 //   it("SHOW_EDITOR", () => {
-//     const result = editReducer(editInitialState, {type: "SHOW_EDITOR", row: 1, cell: 2});
+//     const result = editReducer([], {type: "SHOW_EDITOR", row: 1, cell: 2});
 //     const expected = {row: 1, cell: 2};
 
 //     expect(result).toEqual(expected);
@@ -116,23 +115,48 @@ const editReducer = (state = editInitialState, action) => {
       //完了
 // describe("editReducer", () => {
 //   it("SHOW_EDITOR", () => {
-//     const result = editReducer(editInitialState, {type: "SHOW_EDITOR", row: null, cell: null});
+//     const result = editReducer([], {type: "SHOW_EDITOR", row: null, cell: null});
 //     const expected = {row: null, cell: null};
 
 //     expect(result).toEqual(expected);
 //   });
 // });
 
- describe("dataReducer", () => {
-   it("SORT_DATA", () => {
-     const result = dataReducer(sortDataInitial, {type: "SORT_DATA", sortby: 0, column: 0, des: true});
-     const expected = [
-      [ 1, '未入力', 30, 23, 0, '' ],
-      [ 2, '未入力', 10, 21, 0, '' ],
-      [ 3, '未入力', 20, 22, 0, '' ],
-      [ 4, '未入力', 40, 24, 0, '' ],
-      [ 5, '未入力', 50, 25, 0, '' ] ];
+//  describe("dataReducer", () => {
+//    it("SORT_DATA", () => {
+//      const result = dataReducer(sortDataInitial, {type: "SORT_DATA", sortby: 0, column: 0, descending: false});
+//      const expected = //[
+//       // [ 1, '未入力', 30, 23, 0, '' ],
+//       // [ 2, '未入力', 10, 21, 0, '' ],
+//       // [ 3, '未入力', 20, 22, 0, '' ],
+//       // [ 4, '未入力', 40, 24, 0, '' ],
+//       // [ 5, '未入力', 50, 25, 0, '' ] ];
 
-     expect(result).toEqual(expected);
-   });
- });
+//       [
+//         [ 5, '未入力', 50, 25, 0, '' ],
+//         [ 4, '未入力', 40, 24, 0, '' ],
+//         [ 3, '未入力', 20, 22, 0, '' ],
+//         [ 2, '未入力', 10, 21, 0, '' ],
+//         [ 1, '未入力', 30, 23, 0, '' ] ];
+
+//      expect(result).toEqual(expected);
+//    });
+//  });
+
+describe("descendingReducer", () => {
+  it("SORT_DESCENDING", () => {
+    const result = descendingReducer(false, {type: "SORT_DESCENDING", descending: false});
+    const expected = false;
+
+    expect(result).toEqual(expected);
+  });
+});
+
+describe("sortByReducer", () => {
+  it("SORT_SORTBY", () => {
+    const result = sortByReducer(null, {type: "SORT_SORTBY", sortBy: 0});
+    const expected = 0;
+
+    expect(result).toEqual(expected);
+  });
+});
