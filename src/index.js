@@ -18,6 +18,70 @@ import {
 } from 'material-ui/Table';
 injectTapEventPlugin();
 
+const dataReducer = (state = [...Array(5).keys()].map(i => [ i + 1, "未入力", 1, 2, 0, ""]), action) => {
+  switch (action.type) {
+    case 'ADD_ROW':
+      return [...state, [state.length + 1, "未入力", 1, 2, 0, ""]]
+
+    case 'DELETE':
+      return state.filter(d => {
+        return d[0] !== action.eventTargetId;
+      })
+
+    case 'SAVE':
+      const test = state.slice();
+      test[action.row][action.cell] = action.input;
+      return test;
+
+    case 'SORT_DATA':
+      const clonedState = state.slice();
+      const descending = action.sortby === action.column && !action.descending;
+
+      return clonedState.sort((a, b) => {
+        return descending
+          ? (a[action.column] < b[action.column] ? 1 : -1)
+          : (a[action.column] > b[action.column] ? 1 : -1);
+      });
+
+    default:
+        return state;
+  }
+};
+
+const editReducer = (state = [], action) => {
+  switch (action.type) {
+    case 'SHOW_EDITOR':
+      return {
+        row: action.row,
+        cell: action.cell
+      };
+
+    default:
+      return state;
+  }
+};
+
+const descendingReducer = (state = false, action) => {
+  switch (action.type) {
+    case 'SORT_DESCENDING':
+      return action.descending;
+
+    default:
+      return state;
+  }
+};
+
+const sortByReducer = (state = null, action) => {
+  switch (action.type) {
+    case 'SORT_SORTBY':
+      return action.sortBy;
+
+
+    default:
+      return state;
+  }
+};
+
 class TitleHeader extends Component {
   render() {
     return (
@@ -30,76 +94,11 @@ class TitleHeader extends Component {
 
 
 class Excel extends Component {
-  初期化
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: [...Array(5).keys()].map(i => [ i + 1, "未入力", i + 1, 2, 0, ""]),
-      sortby: null,
-      descending: false,
-      edit: null, // {row: 行番号, cell: 列番号}
-    };
-  }
-
-  _sort = (e) => {
-    const column = e.target.cellIndex - 1 ; //ダブルクリックされた<td>要素を表す
-    const data = this.state.data.slice();
-    console.log(this.state.descending);
-    console.log(this.state.sortby);
-    console.log(column);
-    const descending = this.state.sortby === column && !this.state.descending;
-    console.log(descending);
-    data.sort((a, b) => {
-      return descending
-        ? (a[column] < b[column] ? 1 : -1)
-        : (a[column] > b[column] ? 1 : -1);
-    });
-    this.setState({data: data, sortby: column, descending: descending});
-  }
-
-  _showEditor = (e) => {
-    // console.log(e.target.dataset.row);
-    // console.log(e.target.cellIndex);
-    this.setState({
-      edit: {
-        row: parseInt(e.target.dataset.row, 10),
-        cell: e.target.cellIndex
-      }
-    });
-  }
-
-  _save = (e) => {
-    e.preventDefault();
-    const input = e.target.firstChild;
-    const data = this.state.data.slice();
-    data[this.state.edit.row][this.state.edit.cell] = input.value;
-    this.setState({edit: null, data: data});
-  }
-
-  addRow = () => {
-    //const add = [this.state.data.length + 1, "", 1, 2];
-    const addrow = [...this.state.data, [this.state.data.length + 1, "未入力", 1, 2, 0, ""]];
-    this.setState({data: addrow});
-  }
-
-  delete = (event) => {
-    //console.log(event.target.dataset.id);
-    //console.log(event.currentTarget);
-    const deleteNumber = this.state.data.filter(d => {
-      //console.log(this.state.edit.row);
-      return d[0] !== parseInt(event.target.dataset.id);
-    });
-    this.setState({data: deleteNumber});
-  }
-
   render() {
     const headers = ["ID", "品名", "単価", "数量", "合計", "削除"];
-    // this.state.data.forEach((d, i) => this.state.data[i][4] = d[2] * d[3] );
-    // console.log(this.state.data);
+    console.log(headers);
     const _data =  this.state.data.map( d => [ d[0], d[1], d[2], d[3], d[2] * d[3], d[5] ]);
-    //console.log(this.state.data);
     const total_price = _data.map( a => a[4]).reduce((p, c) => p + c);
-    //console.log(this.state.edit);
     return (
       <div>
         <MuiThemeProvider>
@@ -110,29 +109,29 @@ class Excel extends Component {
                   if (this.state.sortby === idx) {
                     title += this.state.descending ? ' \u2191' : ' \u2193';
                   }
-                  return <TableHeaderColumn key={idx} onTouchTap={this._sort}>{title}</TableHeaderColumn>;
+                  return <TableHeaderColumn key={idx} onTouchTap={this.props._sort}>{title}</TableHeaderColumn>;
                 })}
               </TableRow>
             </TableHeader>
             <TableBody
               stripedRows={true}
               displayRowCheckbox={false}
-              onDoubleClick={this._showEditor}>
-              {_data.map((row, rowidx) => {
+              onDoubleClick={this.props._showEditor}>
+              {this.props.value.map((row, rowidx) => {
                   return (
                     <TableRow key={rowidx}>{row.map((cell, idx) => {
                         //const content = cell;
                         const edit = this.state.edit;
                           //console.log(cell, idx);
                         const content = (edit  && edit.row === rowidx && edit.cell === idx && idx < 4)
-                        ? <form onSubmit={this._save}>
+                        ? <form onSubmit={this.props._save}>
                             <input type="text" defaultValue={this.state.cell}/>
                           </form>
                         : cell;
 
                         const btn = (idx === 5)
                         ? <FlatButton
-                            onClick={this.delete}
+                            onClick={this.props._delete}
                             data-id={row[0]}
                             backgroundColor="LightGrey"
                             hoverColor="red"
@@ -159,6 +158,8 @@ class Excel extends Component {
     );
   }
 };
+
+// Excel.propTypes = {   headers: PropTypes.arrayOf(PropTypes.string) };
 
 class Total_price_table extends Component {
   render() {
@@ -194,16 +195,82 @@ class Total_price_table extends Component {
   }
 }
 
-class App extends Component {
-  render() {
-    return (
-      <div>
-      <TitleHeader />
-      <Excel />
-    </div>
-    )
-  }
+const redusers = combineReducers({
+  dataReducer,
+  sortByReducer,
+  descendingReducer,
+  editReducer
+})
+
+const App = () => {
+<div>
+  <TitleHeader/>
+  <Excel
+    value={store.getState()}
+
+    _addRow = {() =>
+      store.dispatch({
+        type:'ADD_ROW'
+   })}
+
+   _delete ={(event) =>
+     store.dispatch({
+       type: 'DELETE',
+       eventTargetId: 1
+   })}
+
+   _showEditor = {(e) =>
+     store.dispatch({
+       type: 'SHOW_EDITOR',
+       row: 1,
+       cell: 2
+   })}
+
+   _save = {(e) =>
+     store.dispatch({
+       type: 'SAVE',
+       input: 32,
+       row: 2,
+       cell: 1
+   })}
+
+   _sortData = {(e) =>
+     store.dispatch({
+       type: 'SORT_DATA',
+       column: 0,
+       sortby: 0,
+       descending: false
+   })}
+
+   _sortDescending = {() =>
+    store.dispatch({
+      type: 'SORT_DESCENDING',
+      descending: false
+    })}
+
+  _sortSortBy = {() =>
+    store.dispatch({
+      type: 'SORT_SORTBY',
+      sortBy: 0
+    })}
+  />
+</div>
+ }
+
+// const initialState = {
+//   data: [...Array(5).keys()].map(i => [ i + 1, "未入力", i + 1, 2, 0, ""]),
+//   sortBy: null,
+//   descending: false,
+//   edit: null,
+// };
+
+const store = createStore(redusers);
+
+const render = () => {
+  ReactDOM.render(
+    <App />, document.getElementById("root"));
 }
 
-ReactDOM.render(
-  <App />, document.getElementById("root"));
+store.subscribe(render);
+
+render();
