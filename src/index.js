@@ -24,21 +24,24 @@ const dataReducer = (state = [...Array(5).keys()].map(i => [ i + 1, "未入力",
       return [...state, [state.length + 1, "未入力", 1, 2, 0, ""]]
 
     case 'DELETE':
+    console.log();
+    console.log(action.eventTargetId);
       return state.filter(d => {
         return d[0] !== action.eventTargetId;
       })
 
     case 'SAVE':
-      const test = state.slice();
-      test[action.row][action.cell] = action.input;
-      return test;
+      const clonedStateSave = state.slice();
+      clonedStateSave[action.row][action.cell] = action.input;
+      return clonedStateSave;
 
     case 'SORT_DATA':
-      const clonedState = state.slice();
-      const descending = action.sortby === action.column && !action.descending;
-
-      return clonedState.sort((a, b) => {
-        return descending
+    console.log(action.sortby, action.column, action.descending);
+      const clonedStateSort = state.slice();
+      descending: action.sortby === action.column && !action.descending;
+      console.log(action.descending);
+      return clonedStateSort.sort((a, b) => {
+        return action.descending
           ? (a[action.column] < b[action.column] ? 1 : -1)
           : (a[action.column] > b[action.column] ? 1 : -1);
       });
@@ -96,8 +99,10 @@ class TitleHeader extends Component {
 class Excel extends Component {
   render() {
     const headers = ["ID", "品名", "単価", "数量", "合計", "削除"];
-    console.log(headers);
-    const _data =  this.state.data.map( d => [ d[0], d[1], d[2], d[3], d[2] * d[3], d[5] ]);
+    // console.log(headers);
+     console.log(this.props.value);
+    // console.log(store.getState());
+    const _data =  this.props.value.dataReducer.map( d => [ d[0], d[1], d[2], d[3], d[2] * d[3], d[5] ]);
     const total_price = _data.map( a => a[4]).reduce((p, c) => p + c);
     return (
       <div>
@@ -106,10 +111,10 @@ class Excel extends Component {
             <TableHeader displayRowCheckbox={false} displaySelectAll={false}>
               <TableRow>
                 {headers.map((title, idx) => {
-                  if (this.state.sortby === idx) {
-                    title += this.state.descending ? ' \u2191' : ' \u2193';
+                  if (this.props.value.sortByReducer === idx) {
+                    title += this.props.value.descendingReducer ? ' \u2191' : ' \u2193';
                   }
-                  return <TableHeaderColumn key={idx} onTouchTap={this.props._sort}>{title}</TableHeaderColumn>;
+                  return <TableHeaderColumn key={idx} onTouchTap={this.props._sortData}>{title}</TableHeaderColumn>;
                 })}
               </TableRow>
             </TableHeader>
@@ -117,21 +122,21 @@ class Excel extends Component {
               stripedRows={true}
               displayRowCheckbox={false}
               onDoubleClick={this.props._showEditor}>
-              {this.props.value.map((row, rowidx) => {
+              {_data.map((row, rowidx) => {
                   return (
                     <TableRow key={rowidx}>{row.map((cell, idx) => {
                         //const content = cell;
-                        const edit = this.state.edit;
+                        const edit = this.props.value.editReducer;
                           //console.log(cell, idx);
                         const content = (edit  && edit.row === rowidx && edit.cell === idx && idx < 4)
                         ? <form onSubmit={this.props._save}>
-                            <input type="text" defaultValue={this.state.cell}/>
+                            <input type="text" defaultValue={this.props.value.editReducer.cell}/>
                           </form>
                         : cell;
 
                         const btn = (idx === 5)
                         ? <FlatButton
-                            onClick={this.props._delete}
+                            onClick={(e) => console.log(e.target.dataset.id)}
                             data-id={row[0]}
                             backgroundColor="LightGrey"
                             hoverColor="red"
@@ -151,7 +156,7 @@ class Excel extends Component {
           </Table>
         </MuiThemeProvider>
         <MuiThemeProvider>
-          <RaisedButton label="行追加" onClick={this.addRow}/>
+          <RaisedButton label="行追加" onClick={this.props._addRow}/>
         </MuiThemeProvider>
         <Total_price_table total_price={total_price}/>
       </div>
@@ -195,7 +200,7 @@ class Total_price_table extends Component {
   }
 }
 
-const redusers = combineReducers({
+const reducers = combineReducers({
   dataReducer,
   sortByReducer,
   descendingReducer,
@@ -203,61 +208,62 @@ const redusers = combineReducers({
 })
 
 const App = () => {
+  //console.log(store.getState())
   return(
     <div>
       <TitleHeader/>
       <Excel
         value={store.getState()}
-
         _addRow = {() =>
           store.dispatch({
             type:'ADD_ROW'
        })}
 
-      _delete ={(event) =>
+      _delete ={(e) =>
         store.dispatch({
           type: 'DELETE',
-          eventTargetId: 1
+          eventTargetId: parseInt(e.target.dataset.id)
       })}
 
       _showEditor = {(e) =>
         store.dispatch({
           type: 'SHOW_EDITOR',
-          row: 1,
-          cell: 2
+          row: parseInt(e.target.dataset.row, 10),
+          cell: e.target.cellIndex
       })}
 
       _save = {(e) =>
         store.dispatch({
           type: 'SAVE',
-          input: 32,
-          row: 2,
-          cell: 1
+          input: e.target.firstChild,
+          row: parseInt(e.target.dataset.row, 10),
+          cell: e.target.cellIndex
       })}
 
       _sortData = {(e) =>
         store.dispatch({
           type: 'SORT_DATA',
-          column: 0,
-          sortby: 0,
-          descending: false
+          column: e.target.cellIndex - 1,
+          sortby: e.target.cellIndex - 1,
+          descending: descendingReducer
       })}
 
-      _sortDescending = {() =>
+      _sortDescending = {(e) =>
        store.dispatch({
          type: 'SORT_DESCENDING',
-         descending: false
+         descending: dataReducer.descending
        })}
 
-      _sortSortBy = {() =>
+      _sortSortBy = {(e) =>
         store.dispatch({
           type: 'SORT_SORTBY',
-          sortBy: 0
+          sortBy: e.target.cellIndex - 1
         })}
       />
     </div>
-  );
+  )
  }
+
 
 // const initialState = {
 //   data: [...Array(5).keys()].map(i => [ i + 1, "未入力", i + 1, 2, 0, ""]),
@@ -266,11 +272,13 @@ const App = () => {
 //   edit: null,
 // };
 
-const store = createStore(redusers);
+const store = createStore(reducers);
 
 const render = () => {
-  ReactDOM.render(
-    <App />, document.getElementById("root"));
+  return(
+    ReactDOM.render(
+    <App />, document.getElementById("root"))
+  );
 }
 
 store.subscribe(render);
