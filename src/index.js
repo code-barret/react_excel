@@ -18,30 +18,33 @@ import {
 } from 'material-ui/Table';
 injectTapEventPlugin();
 
-const dataReducer = (state = [...Array(5).keys()].map(i => [ i + 1, "未入力", 1, 2, 0, ""]), action) => {
+const dataReducer = (state = [...Array(5).keys()].map(i => [ i + 1, "未入力", i + 1, i + 2, 0, ""]), action) => {
   switch (action.type) {
     case 'ADD_ROW':
       return [...state, [state.length + 1, "未入力", 1, 2, 0, ""]]
 
     case 'DELETE':
-    console.log();
-    console.log(action.eventTargetId);
       return state.filter(d => {
         return d[0] !== action.eventTargetId;
       })
 
     case 'SAVE':
+    console.log(action.input);
+    console.log(action.row);
+    console.log(action.cell);
+      action.Default;
       const clonedStateSave = state.slice();
-      clonedStateSave[action.row][action.cell] = action.input;
+      //console.log(clonedStateSave);
+      clonedStateSave[action.row][action.cell] = action.input.value;
       return clonedStateSave;
 
     case 'SORT_DATA':
     console.log(action.sortby, action.column, action.descending);
       const clonedStateSort = state.slice();
-      descending: action.sortby === action.column && !action.descending;
-      console.log(action.descending);
+      const descending = action.sortby === action.column && !action.descending.descendingReducer;
+      console.log(descending);
       return clonedStateSort.sort((a, b) => {
-        return action.descending
+        return descending
           ? (a[action.column] < b[action.column] ? 1 : -1)
           : (a[action.column] > b[action.column] ? 1 : -1);
       });
@@ -67,6 +70,7 @@ const editReducer = (state = [], action) => {
 const descendingReducer = (state = false, action) => {
   switch (action.type) {
     case 'SORT_DESCENDING':
+    console.log(action.descending);
       return action.descending;
 
     default:
@@ -77,6 +81,7 @@ const descendingReducer = (state = false, action) => {
 const sortByReducer = (state = null, action) => {
   switch (action.type) {
     case 'SORT_SORTBY':
+    console.log(action.sortBy);
       return action.sortBy;
 
 
@@ -101,6 +106,7 @@ class Excel extends Component {
     const headers = ["ID", "品名", "単価", "数量", "合計", "削除"];
     // console.log(headers);
      console.log(this.props.value);
+     //console.log(this.props.value.editReducer);
     // console.log(store.getState());
     const _data =  this.props.value.dataReducer.map( d => [ d[0], d[1], d[2], d[3], d[2] * d[3], d[5] ]);
     const total_price = _data.map( a => a[4]).reduce((p, c) => p + c);
@@ -127,16 +133,16 @@ class Excel extends Component {
                     <TableRow key={rowidx}>{row.map((cell, idx) => {
                         //const content = cell;
                         const edit = this.props.value.editReducer;
-                          //console.log(cell, idx);
+                          //console.log(edit.row, edit.cell);
                         const content = (edit  && edit.row === rowidx && edit.cell === idx && idx < 4)
                         ? <form onSubmit={this.props._save}>
-                            <input type="text" defaultValue={this.props.value.editReducer.cell}/>
+                            <input type="text" defaultValue={cell}/>
                           </form>
                         : cell;
 
                         const btn = (idx === 5)
                         ? <FlatButton
-                            onClick={(e) => console.log(e.target.dataset.id)}
+                            onClick={this.props._delete}
                             data-id={row[0]}
                             backgroundColor="LightGrey"
                             hoverColor="red"
@@ -222,7 +228,7 @@ const App = () => {
       _delete ={(e) =>
         store.dispatch({
           type: 'DELETE',
-          eventTargetId: parseInt(e.target.dataset.id)
+          eventTargetId: parseInt(e.currentTarget.dataset.id)
       })}
 
       _showEditor = {(e) =>
@@ -236,8 +242,9 @@ const App = () => {
         store.dispatch({
           type: 'SAVE',
           input: e.target.firstChild,
-          row: parseInt(e.target.dataset.row, 10),
-          cell: e.target.cellIndex
+          row: parseInt(e.currentTarget.dataset.row, 10),
+          cell: e.target.cellIndex,
+          Default: e.preventDefault()
       })}
 
       _sortData = {(e) =>
@@ -245,10 +252,10 @@ const App = () => {
           type: 'SORT_DATA',
           column: e.target.cellIndex - 1,
           sortby: e.target.cellIndex - 1,
-          descending: descendingReducer
+          descending: store.getState().descendingReducer
       })}
 
-      _sortDescending = {(e) =>
+      _sortDescending = {() =>
        store.dispatch({
          type: 'SORT_DESCENDING',
          descending: dataReducer.descending
