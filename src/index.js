@@ -21,7 +21,7 @@ injectTapEventPlugin();
 const dataReducer = (state = [...Array(5).keys()].map(i => [ i + 1, "未入力", i + 1, i + 2, 0, ""]), action) => {
   switch (action.type) {
     case 'ADD_ROW':
-      return [...state, [state.length + 1, "未入力", 1, 2, 0, ""]]
+      return [...state, [state.length + 1, "未入力", 1, 2, 0, ""]];
 
     case 'DELETE':
       return state.filter(d => {
@@ -35,7 +35,7 @@ const dataReducer = (state = [...Array(5).keys()].map(i => [ i + 1, "未入力",
       const clonedStateSave = state.slice();
       //console.log(clonedStateSave);
       clonedStateSave[action.row][action.cell] = action.input.value;
-      console.log(clonedStateSave);
+      //console.log(clonedStateSave);
       return clonedStateSave;
 
     case 'SORT_DATA':
@@ -50,7 +50,7 @@ const dataReducer = (state = [...Array(5).keys()].map(i => [ i + 1, "未入力",
       });
 
     default:
-        return state;
+      return state;
   }
 };
 
@@ -90,7 +90,6 @@ const sortByReducer = (state = null, action) => {
     console.log(action.sortBy);
       return action.sortBy;
 
-
     default:
       return state;
   }
@@ -105,7 +104,6 @@ class TitleHeader extends Component {
     );
   }
 }
-
 
 class Excel extends Component {
   render() {
@@ -142,14 +140,14 @@ class Excel extends Component {
                     <TableRow key={rowidx}>{row.map((cell, idx) => {
                         //const content = cell;
                         const edit = this.props.value.editReducer;
-                          console.log(edit);
+                          //console.log(edit);
                         const content = (edit  && edit.row === rowidx && edit.cell === idx && idx < 4)
                         ? <form onSubmit={this.props._save}>
                             <input type="text" defaultValue={cell}/>
                           </form>
                         : cell;
 
-                        console.log(edit);
+                        //console.log(edit);
 
                         const btn = (idx === 5)
                         ? <FlatButton
@@ -252,19 +250,19 @@ const App = (_save) => {
           cell: e.target.cellIndex
       })}
 
-      _save = {(e, edit) =>
+      _save = {(e, edit) => {
+        console.log(e.currentTarget.dataset.row, 10)
+        console.log(e.target.cellIndex)
+        console.log(e.target.firstChild.value)
+        console.log(store.getState().editReducer.row)
+        console.log(store.getState().editReducer.cell)
         store.dispatch({
-          test: console.log(e.currentTarget.dataset.row, 10),
-          test2: console.log(e.target.cellIndex),
           type: 'SAVE',
           input: e.target.firstChild,
-          inputTest: console.log(e.target.firstChild.value),
           row: store.getState().editReducer.row,
-          test3: console.log(store.getState().editReducer.row),
           cell: store.getState().editReducer.cell,
-          test4: console.log(store.getState().editReducer.cell),
           e: e
-      })}
+      })}}
 
       _sortData = {(e) =>
         store.dispatch({
@@ -278,13 +276,13 @@ const App = (_save) => {
        store.dispatch({
          type: 'SORT_DESCENDING',
          descending: dataReducer.descending
-       })}
+      })}
 
       _sortSortBy = {(e) =>
         store.dispatch({
           type: 'SORT_SORTBY',
           sortBy: e.target.cellIndex - 1
-        })}
+      })}
 
         _editReset = {() =>
           store.dispatch({
