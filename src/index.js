@@ -29,20 +29,20 @@ const dataReducer = (state = [...Array(5).keys()].map(i => [ i + 1, "未入力",
       })
 
     case 'SAVE':
-    console.log(action.input);
-    console.log(action.row);
-    console.log(action.cell);
-      action.Default;
+    // console.log(action.input);
+    // console.log(action.row);
+      action.e.preventDefault();
       const clonedStateSave = state.slice();
       //console.log(clonedStateSave);
       clonedStateSave[action.row][action.cell] = action.input.value;
+      console.log(clonedStateSave);
       return clonedStateSave;
 
     case 'SORT_DATA':
-    console.log(action.sortby, action.column, action.descending);
+    //console.log(action.sortby, action.column, action.descending);
       const clonedStateSort = state.slice();
       const descending = action.sortby === action.column && !action.descending.descendingReducer;
-      console.log(descending);
+      //console.log(descending);
       return clonedStateSort.sort((a, b) => {
         return descending
           ? (a[action.column] < b[action.column] ? 1 : -1)
@@ -54,13 +54,19 @@ const dataReducer = (state = [...Array(5).keys()].map(i => [ i + 1, "未入力",
   }
 };
 
-const editReducer = (state = [], action) => {
+const editReducer = (state = null, action) => {
   switch (action.type) {
     case 'SHOW_EDITOR':
       return {
         row: action.row,
         cell: action.cell
-      };
+      }
+
+    case 'EDIT_RESET':
+      return {
+        row: action.row,
+        cell: action.cell
+      }
 
     default:
       return state;
@@ -103,6 +109,9 @@ class TitleHeader extends Component {
 
 class Excel extends Component {
   render() {
+   // if(this.props.value.editReducer !== null) {
+   //    return this.props._editReset;
+   //  }
     const headers = ["ID", "品名", "単価", "数量", "合計", "削除"];
     // console.log(headers);
      console.log(this.props.value);
@@ -133,12 +142,14 @@ class Excel extends Component {
                     <TableRow key={rowidx}>{row.map((cell, idx) => {
                         //const content = cell;
                         const edit = this.props.value.editReducer;
-                          //console.log(edit.row, edit.cell);
+                          console.log(edit);
                         const content = (edit  && edit.row === rowidx && edit.cell === idx && idx < 4)
                         ? <form onSubmit={this.props._save}>
                             <input type="text" defaultValue={cell}/>
                           </form>
                         : cell;
+
+                        console.log(edit);
 
                         const btn = (idx === 5)
                         ? <FlatButton
@@ -213,8 +224,11 @@ const reducers = combineReducers({
   editReducer
 })
 
-const App = () => {
+const App = (_save) => {
   //console.log(store.getState())
+   //if(store.getState().editReducer !== null) {
+   //   console.log("通過");
+   // }
   return(
     <div>
       <TitleHeader/>
@@ -238,13 +252,18 @@ const App = () => {
           cell: e.target.cellIndex
       })}
 
-      _save = {(e) =>
+      _save = {(e, edit) =>
         store.dispatch({
+          test: console.log(e.currentTarget.dataset.row, 10),
+          test2: console.log(e.target.cellIndex),
           type: 'SAVE',
           input: e.target.firstChild,
-          row: parseInt(e.currentTarget.dataset.row, 10),
-          cell: e.target.cellIndex,
-          Default: e.preventDefault()
+          inputTest: console.log(e.target.firstChild.value),
+          row: store.getState().editReducer.row,
+          test3: console.log(store.getState().editReducer.row),
+          cell: store.getState().editReducer.cell,
+          test4: console.log(store.getState().editReducer.cell),
+          e: e
       })}
 
       _sortData = {(e) =>
@@ -266,11 +285,18 @@ const App = () => {
           type: 'SORT_SORTBY',
           sortBy: e.target.cellIndex - 1
         })}
+
+        _editReset = {() =>
+          store.dispatch({
+            type: 'EDIT_RESET',
+            row: null,
+            cell: null
+          })
+        }
       />
     </div>
   )
  }
-
 
 // const initialState = {
 //   data: [...Array(5).keys()].map(i => [ i + 1, "未入力", i + 1, 2, 0, ""]),
